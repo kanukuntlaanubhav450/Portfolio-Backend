@@ -1,9 +1,20 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json');
+
+// For local development, use serviceAccountKey.json
+// For production (Render), use environment variable
+let serviceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  // Production: Parse the JSON from environment variable
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} else {
+  // Local development: Use the JSON file
+  serviceAccount = require('./serviceAccountKey.json');
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  storageBucket: "cmsp-e426a.firebasestorage.app" // Updated to match Firebase Console
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || "cmsp-e426a.firebasestorage.app"
 });
 
 const db = admin.firestore();
